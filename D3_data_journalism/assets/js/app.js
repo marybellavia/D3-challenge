@@ -19,78 +19,6 @@ var svg = d3
   .attr("width", svgWidth)
   .attr("height", svgHeight);
 
-// appending a SVG group
-var chartGroup = svg.append("g")
-  .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-// // NEW STUFF
-// // Initial Params
-// var chosenXAxis = "poverty";
-
-// // function used for updating x-scale var upon click on axis label
-// function xScale(censusData, chosenXAxis) {
-//   // create scales
-//   var xLinearScale = d3.scaleLinear()
-//     .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
-//       d3.max(censusData, d => d[chosenXAxis]) * 1.2
-//     ])
-//     .range([0, width]);
-//   return xLinearScale;
-// }
-
-// // function used for updating xAxis var upon click on axis label
-// function renderAxes(newXScale, xAxis) {
-//   var bottomAxis = d3.axisBottom(newXScale);
-//   xAxis.transition()
-//     .duration(1000)
-//     .call(bottomAxis);
-//   return xAxis;
-// }
-
-// // function used for updating circles group with a transition to
-// // new circles
-// function renderCircles(circlesGroup, newXScale, chosenXAxis) {
-//   circlesGroup.transition()
-//     .duration(1000)
-//     .attr("cx", d => newXScale(d[chosenXAxis]));
-//   return circlesGroup;
-// }
-
-// // function used for updating circles group with new tooltip
-// function updateToolTip(chosenXAxis, circlesGroup) {
-//   var label;
-
-//   if (chosenXAxis === "poverty") {
-//     label = "In Poverty (%)";
-//   }
-//   if (chosenXAxis === "age") {
-//     label = "Age (Median)"
-//   }
-//   else {
-//     label = "Household Income (Median)";
-//   }
-
-//   var toolTip = d3.tip()
-//     .attr("class", "tooltip")
-//     .offset([80, -60])
-//     .html(function(d) {
-//       return (`${d.abbr}<br>${label} ${d[chosenXAxis]}`);
-//     });
-
-//   circlesGroup.call(toolTip);
-
-//   circlesGroup.on("mouseover", function(data) {
-//     toolTip.show(data);
-//   })
-//     // onmouseout event
-//     .on("mouseout", function(data, index) {
-//       toolTip.hide(data);
-//     });
-
-//   return circlesGroup;
-// }
-// // END NEW STUFF
-
 // importing data
 d3.csv("assets/data/data.csv").then(function(censusData) {
 
@@ -114,12 +42,18 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
   var bottomAxis = d3.axisBottom(xLinearScale);
   var leftAxis = d3.axisLeft(yLinearScale);
 
+  // appending a SVG group
+  var chartGroup = svg.append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
   // appending Axes to the chart
-  chartGroup.append("g")
+  chartGroup
+    .append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(bottomAxis);
 
-  chartGroup.append("g")
+  chartGroup
+    .append("g")
     .call(leftAxis);
 
   // creating Circles
@@ -130,15 +64,21 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
   .attr("cx", d => xLinearScale(d.poverty))
   .attr("cy", d => yLinearScale(d.healthcare))
   .attr("r", "10")
-  .attr("fill", "#bc80bd");
+  .attr("class", "stateCircle");
 
   // initializing tool tip
   var toolTip = d3.tip()
     .attr("class", "tooltip")
-    .offset([80, -60])
     .html(function(d) {
       return (`${d.abbr}`);
     });
+  
+  // attempting to get circle labels but it doesn't work
+  chartGroup
+    .append("text")
+    .text(function(d) { return d.abbr; })
+    .attr("dx", function(d) {return -20;})
+    .attr("class", "stateText");
 
   // creating tooltip in the chart
   chartGroup.call(toolTip);
@@ -166,10 +106,7 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
     .attr("class", "axisText")
     .text("In Poverty (%)");
 
-  // // trying to get label
-  // chartGroup.append("text")
-  //   .attr("dx", function(d){return -20})
-  //   .text(function(d){return d.abbr})
+
 
 }).catch(function(error) {
   console.log(error);

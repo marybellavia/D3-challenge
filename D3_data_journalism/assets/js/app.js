@@ -66,20 +66,23 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
   .attr("r", "10")
   .attr("class", "stateCircle");
 
+  // adding circle labels
+  chartGroup.selectAll("null").data(censusData)
+  .enter()
+  .append("text")
+  .text(function(d) { return d.abbr})
+  .attr("x", d => xLinearScale(d.poverty))
+  .attr("y", d => yLinearScale(d.healthcare))
+  .attr("class", "stateText")
+  .attr('font-size', 10);
+
   // initializing tool tip
   var toolTip = d3.tip()
     .attr("class", "tooltip")
     .html(function(d) {
-      return (`${d.abbr}`);
+      return (`${d.state}<hr>In Poverty (%): ${d.poverty}<br>Lacks Healthcare (%): ${d.healthcare}`);
     });
   
-  // attempting to get circle labels but it doesn't work
-  chartGroup
-    .append("text")
-    .text(function(d) { return d.abbr; })
-    .attr("dx", function(d) {return -20;})
-    .attr("class", "stateText");
-
   // creating tooltip in the chart
   chartGroup.call(toolTip);
 
@@ -105,8 +108,6 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
     .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
     .attr("class", "axisText")
     .text("In Poverty (%)");
-
-
 
 }).catch(function(error) {
   console.log(error);

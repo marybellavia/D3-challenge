@@ -1,14 +1,12 @@
 // placing the variables for widths and margins
 var svgWidth = 960;
 var svgHeight = 500;
-
 var margin = {
   top: 20,
   right: 40,
   bottom: 80,
   left: 100
 };
-
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
@@ -21,19 +19,17 @@ var svg = d3
 
 // importing data
 d3.csv("assets/data/data.csv").then(function(censusData) {
-
   // parsing Data/Cast as numbers
   censusData.forEach(function(data) {
     data.healthcare = +data.healthcare;
     data.poverty = +data.poverty;
   });
 
-  // creating scale functions
+  // creating scale variables
   var xLinearScale = d3.scaleLinear()
     .domain([d3.min(censusData, d => d.poverty) * 0.8,
     d3.max(censusData, d => d.poverty) * 1.2
     ]).range([0, width]);
-
   var yLinearScale = d3.scaleLinear()
     .domain([0, d3.max(censusData, d => d.healthcare)])
     .range([height, 0]);
@@ -51,7 +47,6 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
     .append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(bottomAxis);
-
   chartGroup
     .append("g")
     .call(leftAxis);
@@ -103,7 +98,6 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
     .attr("dy", "1em")
     .attr("class", "axisText")
     .text("Lacks Healthcare (%)");
-
   chartGroup.append("text")
     .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
     .attr("class", "axisText")
